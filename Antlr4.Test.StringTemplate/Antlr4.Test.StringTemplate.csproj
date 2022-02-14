@@ -1,15 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="Microsoft.NET.Sdk">
+﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>net45;netcoreapp2.0</TargetFrameworks>
-
-    <Description>The C# port of StringTemplate 4</Description>
-    <Company>Tunnel Vision Laboratories, LLC</Company>
-    <Copyright>Copyright © Sam Harwell 2011</Copyright>
-    <Version>$(STVersion)</Version>
-    <FileVersion>$(STFileVersion)</FileVersion>
-    <InformationalVersion>$(STInformationalVersion)</InformationalVersion>
+    <TargetFramework>netcoreapp2.0</TargetFramework>
   </PropertyGroup>
 
   <Choose>
@@ -17,11 +9,6 @@
       <PropertyGroup>
         <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
       </PropertyGroup>
-    </When>
-    <When Condition="'$(TargetFramework)' == 'net45'">
-      <ItemGroup>
-        <ProjectReference Include="..\Antlr4.StringTemplate.Visualizer\Antlr4.StringTemplate.Visualizer.csproj" />
-      </ItemGroup>
     </When>
   </Choose>
 
@@ -32,7 +19,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Runtime\Antlr3.Runtime\Antlr3.Runtime.csproj" />
     <ProjectReference Include="..\Antlr4.StringTemplate\Antlr4.StringTemplate.csproj" />
   </ItemGroup>
 

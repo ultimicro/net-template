@@ -1,19 +1,7 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project Sdk="MSBuild.Sdk.Extras">
+﻿<Project Sdk="MSBuild.Sdk.Extras">
 
   <PropertyGroup>
-    <TargetFrameworks>net35-client;net40-client;netstandard1.3</TargetFrameworks>
-
-    <Description>The C# port of StringTemplate 4.</Description>
-    <Version>$(STVersion)</Version>
-    <FileVersion>$(STFileVersion)</FileVersion>
-    <InformationalVersion>$(STInformationalVersion)</InformationalVersion>
-
-    <Title>StringTemplate 4</Title>
-    <PackageId>StringTemplate4</PackageId>
-    <PackageTags>stringtemplate st4 stringtemplate4 template</PackageTags>
-
-    <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
+    <TargetFramework>netstandard1.3</TargetFramework>
   </PropertyGroup>
 
   <Target Name="DisableCrazyPackageDeletion" BeforeTargets="Clean">
@@ -37,10 +25,6 @@
   </Choose>
 
   <ItemGroup>
-    <ProjectReference Include="..\Runtime\Antlr3.Runtime\Antlr3.Runtime.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
     <None Include="Debug\DebugTemplate.cs" />
     <Compile Remove="Debug\DebugTemplate.cs" />
   </ItemGroup>
@@ -58,6 +42,10 @@
     <Compile Update="Compiler\TemplateParser.g3.cs">
       <DependentUpon>TemplateParser.g3</DependentUpon>
     </Compile>
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Antlr3.Runtime" Version="3.5.1" />
   </ItemGroup>
 
 </Project>
