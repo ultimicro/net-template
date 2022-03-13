@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\Antlr4.StringTemplate\Antlr4.StringTemplate.csproj" />
+    <ProjectReference Include="..\NetTemplate\NetTemplate.csproj" />
   </ItemGroup>
 
 </Project>
