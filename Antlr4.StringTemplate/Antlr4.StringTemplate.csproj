@@ -1,33 +1,9 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard1.3</TargetFramework>
+    <TargetFramework>net6.0</TargetFramework>
+    <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
   </PropertyGroup>
-
-  <Target Name="DisableCrazyPackageDeletion" BeforeTargets="Clean">
-    <PropertyGroup>
-      <GeneratePackageValue>$(GeneratePackageOnBuild)</GeneratePackageValue>
-      <GeneratePackageOnBuild>false</GeneratePackageOnBuild>
-    </PropertyGroup>
-  </Target>
-  <Target Name="EnablePackageGeneration" Condition="'$(GeneratePackageValue)' != ''" BeforeTargets="Build">
-    <PropertyGroup>
-      <GeneratePackageOnBuild>$(GeneratePackageValue)</GeneratePackageOnBuild>
-    </PropertyGroup>
-  </Target>
-
-  <Choose>
-    <When Condition="'$(TargetFramework)' == 'netstandard1.3'">
-      <PropertyGroup>
-        <DefineConstants>$(DefineConstants);NETSTANDARD</DefineConstants>
-      </PropertyGroup>
-    </When>
-  </Choose>
-
-  <ItemGroup>
-    <None Include="Debug\DebugTemplate.cs" />
-    <Compile Remove="Debug\DebugTemplate.cs" />
-  </ItemGroup>
 
   <ItemGroup>
     <Compile Update="Compiler\CodeGenerator.g3.cs">
