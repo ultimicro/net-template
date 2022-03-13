@@ -3,7 +3,7 @@
   <PropertyGroup>
     <NoWarn>CS1591</NoWarn>
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
-    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)Antlr3.ruleset</CodeAnalysisRuleSet>
+    <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)CodeAnalysis.ruleset</CodeAnalysisRuleSet>
     <PackageProjectUrl>https://github.com/ultimicro/net-template</PackageProjectUrl>
     <Copyright>Copyright © Ultima Microsystems</Copyright>
     <Authors>ultimaweapon, Sam Harwell, Terence Parr</Authors>
