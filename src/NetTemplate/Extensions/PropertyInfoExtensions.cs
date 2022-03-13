@@ -1,16 +1,11 @@
-﻿#if NETSTANDARD
+﻿namespace NetTemplate.Extensions;
 
-namespace Antlr4.StringTemplate.Extensions
+using System.Reflection;
+
+internal static class PropertyInfoExtensions
 {
-    using System.Reflection;
-
-    internal static class PropertyInfoExtensions
+    public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
     {
-        public static MethodInfo GetGetMethod(this PropertyInfo propertyInfo)
-        {
-            return propertyInfo.GetMethod;
-        }
+        return propertyInfo.GetMethod;
     }
 }
-
-#endif

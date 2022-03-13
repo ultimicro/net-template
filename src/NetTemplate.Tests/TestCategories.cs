@@ -1,9 +1,8 @@
-﻿namespace Antlr4.Test.StringTemplate
-{
-    internal static class TestCategories
-    {
-        public const string ST4 = "ST4";
+﻿namespace NetTemplate.Tests;
 
-        public const string Visualizer = "Visualizer";
-    }
+internal static class TestCategories
+{
+    public const string ST4 = "ST4";
+
+    public const string Visualizer = "Visualizer";
 }
