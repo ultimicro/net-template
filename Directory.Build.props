@@ -5,6 +5,7 @@
     <GenerateDocumentationFile>true</GenerateDocumentationFile>
     <CodeAnalysisRuleSet>$(MSBuildThisFileDirectory)CodeAnalysis.ruleset</CodeAnalysisRuleSet>
     <PackageProjectUrl>https://github.com/ultimicro/net-template</PackageProjectUrl>
+    <PackageLicenseExpression>BSD-3-Clause</PackageLicenseExpression>
     <Copyright>Copyright © Ultima Microsystems</Copyright>
     <Authors>ultimaweapon, Sam Harwell, Terence Parr</Authors>
   </PropertyGroup>
