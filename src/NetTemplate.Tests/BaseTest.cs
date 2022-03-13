@@ -11,9 +11,6 @@ using Environment = System.Environment;
 using File = System.IO.File;
 using Path = System.IO.Path;
 using StringBuilder = System.Text.StringBuilder;
-#if !NETSTANDARD
-    using Thread = System.Threading.Thread;
-#endif
 
 [TestClass]
 public abstract class BaseTest
@@ -36,11 +33,7 @@ public abstract class BaseTest
     protected virtual void setUpImpl()
     {
         // Ideally we wanted en-US, but invariant provides a suitable default for testing.
-#if NETSTANDARD
         CultureInfo.CurrentCulture = CultureInfo.InvariantCulture;
-#else
-            Thread.CurrentThread.CurrentCulture = CultureInfo.InvariantCulture;
-#endif
         TemplateGroup.DefaultGroup = new TemplateGroup();
         TemplateCompiler.subtemplateCount = 0;
 

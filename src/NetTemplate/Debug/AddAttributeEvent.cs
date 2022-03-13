@@ -32,9 +32,6 @@ public class AddAttributeEvent : ConstructionEvent
         return "addEvent{" +
             ", name='" + name + '\'' +
             ", value=" + value +
-#if !NETSTANDARD
-                ", location=" + GetFileName() + ":" + GetLine() +
-#endif
                 '}';
     }
 }

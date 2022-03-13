@@ -1,26 +1,9 @@
 ﻿namespace NetTemplate.Extensions;
 
 using System;
-#if !NETSTANDARD
-    using BindingFlags = System.Reflection.BindingFlags;
-    using MethodInfo = System.Reflection.MethodInfo;
-#endif
 
 public static class ExceptionExtensions
 {
-#if !NETSTANDARD
-        private static readonly Action<Exception> _internalPreserveStackTrace = GetInternalPreserveStackTraceDelegate();
-
-        private static Action<Exception> GetInternalPreserveStackTraceDelegate()
-        {
-            MethodInfo methodInfo = typeof(Exception).GetMethod("InternalPreserveStackTrace", BindingFlags.Instance | BindingFlags.NonPublic);
-            if (methodInfo == null)
-                return null;
-
-            return (Action<Exception>)Delegate.CreateDelegate(typeof(Action<Exception>), methodInfo);
-        }
-#endif
-
 #pragma warning disable 618
     public static bool IsCritical(this Exception e)
     {
@@ -30,7 +13,6 @@ public static class ExceptionExtensions
             return true;
         }
 
-#if NETSTANDARD
         switch (e.GetType().FullName)
         {
             case "System.AccessViolationException":
@@ -42,15 +24,6 @@ public static class ExceptionExtensions
             default:
                 break;
         }
-#else
-            if (e is AccessViolationException
-                || e is StackOverflowException
-                || e is ExecutionEngineException
-                || e is AppDomainUnloadedException)
-            {
-                return true;
-            }
-#endif
 
         return false;
     }
@@ -58,9 +31,5 @@ public static class ExceptionExtensions
 
     public static void PreserveStackTrace(this Exception e)
     {
-#if !NETSTANDARD
-            if (_internalPreserveStackTrace != null)
-                _internalPreserveStackTrace(e);
-#endif
     }
 }
