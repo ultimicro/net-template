@@ -6,5 +6,6 @@ public enum RenderOption
     Format,
     Null,
     Separator,
-    Wrap
+    Wrap,
+    Culture,
 }

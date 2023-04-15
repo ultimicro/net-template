@@ -8,6 +8,14 @@ StringTemplate 4 with additional features.
 
 The current version can be drop-in replacement for `StringTemplate4`. Just rename namespace from `Antlr4.StringTemplate` to `NetTemplate`.
 
+## Additional features
+
+### Expression options
+
+The following is a list of the new expression options in additional to StringTemplate 4 [expression options](https://github.com/antlr/stringtemplate4/blob/master/doc/expr-options.md):
+
+- `culture`: specify the name of the culture to override the one that was specified in `Template.Render()` (e.g. `<foo; culture="th-TH">`). It can be any value that is acceptable by `CultureInfo.GetCultureInfo()`, even an empty string.
+
 ## Development
 
 ### Prerequisites

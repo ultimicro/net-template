@@ -6,22 +6,24 @@ using Antlr.Runtime.Tree;
 using NetTemplate.Misc;
 using ArgumentNullException = System.ArgumentNullException;
 
-/** A compiler for a single template. */
+/// <summary>
+/// A compiler for a single template.
+/// </summary>
 public partial class TemplateCompiler
 {
     public static readonly string SubtemplatePrefix = "_sub";
 
     public const int InitialCodeSize = 15;
 
-    public static readonly IDictionary<string, RenderOption> supportedOptions =
-        new Dictionary<string, RenderOption>()
-        {
-                {"anchor",       RenderOption.Anchor},
-                {"format",       RenderOption.Format},
-                {"null",         RenderOption.Null},
-                {"separator",    RenderOption.Separator},
-                {"wrap",         RenderOption.Wrap},
-        };
+    public static readonly IDictionary<string, RenderOption> supportedOptions = new Dictionary<string, RenderOption>()
+    {
+        { "anchor", RenderOption.Anchor },
+        { "format", RenderOption.Format },
+        { "null", RenderOption.Null },
+        { "separator", RenderOption.Separator },
+        { "wrap", RenderOption.Wrap },
+        { "culture", RenderOption.Culture },
+    };
 
     public static readonly int NUM_OPTIONS = supportedOptions.Count;
 

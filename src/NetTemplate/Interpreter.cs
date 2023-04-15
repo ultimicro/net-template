@@ -24,26 +24,26 @@ using Math = System.Math;
 using StringBuilder = System.Text.StringBuilder;
 using StringWriter = System.IO.StringWriter;
 
-/** This class knows how to execute template bytecodes relative to a
- *  particular TemplateGroup. To execute the byte codes, we need an output stream
- *  and a reference to an Template an instance. That instance's impl field points at
- *  a CompiledTemplate, which contains all of the byte codes and other information
- *  relevant to execution.
- *
- *  This interpreter is a stack-based bytecode interpreter.  All operands
- *  go onto an operand stack.
- *
- *  If the group that we're executing relative to has debug set, we track
- *  interpreter events. For now, I am only tracking instance creation events.
- *  These are used by STViz to pair up output chunks with the template
- *  expressions that generate them.
- *
- *  We create a new interpreter for each Template.Render(), DebugTemplate.Visualize, or
- *  DebugTemplate.GetEvents() invocation.
- */
+/// <summary>
+/// This class knows how to execute template bytecodes relative to a
+/// particular TemplateGroup. To execute the byte codes, we need an output stream
+/// and a reference to an Template an instance. That instance's impl field points at
+/// a CompiledTemplate, which contains all of the byte codes and other information
+/// relevant to execution.
+///
+/// This interpreter is a stack-based bytecode interpreter.  All operands
+/// go onto an operand stack.
+///
+/// If the group that we're executing relative to has debug set, we track
+/// interpreter events. For now, I am only tracking instance creation events.
+/// These are used by STViz to pair up output chunks with the template
+/// expressions that generate them.
+///
+/// We create a new interpreter for each Template.Render(), DebugTemplate.Visualize, or
+/// DebugTemplate.GetEvents() invocation.
+/// </summary>
 public partial class Interpreter
 {
-
     public const int DefaultOperandStackSize = 512;
 
     private static readonly string[] predefinedAnonSubtemplateAttributes = { "i", "i0" };
@@ -899,17 +899,36 @@ public partial class Interpreter
         return n;
     }
 
-    protected virtual int WritePlainObject(ITemplateWriter @out, TemplateFrame frame, object o, string[] options)
+    protected virtual int WritePlainObject(ITemplateWriter @out, TemplateFrame frame, object o, string?[]? options)
     {
-        string formatString = null;
-        if (options != null)
+        // Get options.
+        string? formatString = null;
+        CultureInfo? culture = null;
+
+        if (options is not null)
+        {
             formatString = options[(int)RenderOption.Format];
+
+            if (options[(int)RenderOption.Culture] is { } option)
+            {
+                try
+                {
+                    culture = CultureInfo.GetCultureInfo(option);
+                }
+                catch (System.Globalization.CultureNotFoundException)
+                {
+                    _errorManager.RuntimeError(frame, ErrorType.NO_SUCH_CULTURE, option);
+                }
+            }
+        }
+
+        // Get result string.
         IAttributeRenderer r = frame.Template.impl.NativeGroup.GetAttributeRenderer(o.GetType());
 
         string v;
         if (r != null)
         {
-            v = r.ToString(o, formatString, culture);
+            v = r.ToString(o, formatString, culture ?? this.culture);
         }
         else
         {

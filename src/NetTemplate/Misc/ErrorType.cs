@@ -18,6 +18,7 @@ public sealed class ErrorType
     public static readonly ErrorType ARGUMENT_COUNT_MISMATCH = new ErrorType("passed {0} arg(s) to template {1} with {2} declared arg(s)");
     public static readonly ErrorType EXPECTING_STRING = new ErrorType("function {0} expects a string not {1}");
     public static readonly ErrorType CANT_IMPORT = new ErrorType("can't find template(s) in import \"{0}\"");
+    public static readonly ErrorType NO_SUCH_CULTURE = new("no such culture: {0}");
 
     // COMPILE-TIME SYNTAX/SEMANTIC ERRORS
     public static readonly ErrorType SYNTAX_ERROR = new ErrorType("{0}");

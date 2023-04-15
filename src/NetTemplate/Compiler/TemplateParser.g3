@@ -142,14 +142,14 @@ option
 }
 	:	ID
 		{
-		if ( !validOption ) {
+		if (!validOption) {
             errMgr.CompiletimeError(ErrorType.NO_SUCH_OPTION, templateToken, $ID, $ID.text);
 		}
 		}
 		(	'=' exprNoComma 					-> {validOption}? ^('=' ID exprNoComma)
 												->
 		|	{
-			if ( defVal==null ) {
+			if (defVal == null) {
 				errMgr.CompiletimeError(ErrorType.NO_DEFAULT_VALUE, templateToken, $ID);
 			}
 			}
