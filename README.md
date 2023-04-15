@@ -16,6 +16,12 @@ The following is a list of the new expression options in additional to StringTem
 
 - `culture`: specify the name of the culture to override the one that was specified in `Template.Render()` (e.g. `<foo; culture="th-TH">`). It can be any value that is acceptable by `CultureInfo.GetCultureInfo()`, even an empty string.
 
+## Breaking changes
+
+### 1.0 to 2.0
+
+- `NetTemplate.Interpreter` become a sealed class.
+
 ## Development
 
 ### Prerequisites

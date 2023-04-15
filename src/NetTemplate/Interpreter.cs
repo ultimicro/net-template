@@ -42,7 +42,7 @@ using StringWriter = System.IO.StringWriter;
 /// We create a new interpreter for each Template.Render(), DebugTemplate.Visualize, or
 /// DebugTemplate.GetEvents() invocation.
 /// </summary>
-public partial class Interpreter
+public sealed class Interpreter
 {
     public const int DefaultOperandStackSize = 512;
 
@@ -119,7 +119,7 @@ public partial class Interpreter
     }
 
     /** Execute template self and return how many characters it wrote to out */
-    public virtual int Execute(ITemplateWriter @out, TemplateFrame frame)
+    public int Execute(ITemplateWriter @out, TemplateFrame frame)
     {
         try
         {
@@ -142,7 +142,7 @@ public partial class Interpreter
         }
     }
 
-    protected virtual int ExecuteImpl(ITemplateWriter @out, TemplateFrame frame)
+    private int ExecuteImpl(ITemplateWriter @out, TemplateFrame frame)
     {
         Template self = frame.Template;
         int start = @out.Index; // track char we're about to Write
@@ -533,7 +533,7 @@ public partial class Interpreter
 
     // TODO: refactor to Remove dup'd code
 
-    internal virtual void SuperNew(TemplateFrame frame, string name, int nargs)
+    internal void SuperNew(TemplateFrame frame, string name, int nargs)
     {
         Template self = frame.Template;
         Template st = null;
@@ -555,7 +555,7 @@ public partial class Interpreter
         operands[++sp] = st;
     }
 
-    internal virtual void SuperNew(TemplateFrame frame, string name, IDictionary<string, object> attrs)
+    internal void SuperNew(TemplateFrame frame, string name, IDictionary<string, object> attrs)
     {
         Template self = frame.Template;
         Template st = null;
@@ -576,7 +576,7 @@ public partial class Interpreter
         operands[++sp] = st;
     }
 
-    internal virtual void PassThrough(TemplateFrame frame, string templateName, IDictionary<string, object> attrs)
+    internal void PassThrough(TemplateFrame frame, string templateName, IDictionary<string, object> attrs)
     {
         CompiledTemplate c = group.LookupTemplate(templateName);
         if (c == null)
@@ -619,7 +619,7 @@ public partial class Interpreter
         }
     }
 
-    internal virtual void StoreArguments(TemplateFrame frame, IDictionary<string, object> attrs, Template st)
+    internal void StoreArguments(TemplateFrame frame, IDictionary<string, object> attrs, Template st)
     {
         bool noSuchAttributeReported = false;
         if (attrs != null)
@@ -707,7 +707,7 @@ public partial class Interpreter
         }
     }
 
-    internal virtual void StoreArguments(TemplateFrame frame, int nargs, Template st)
+    internal void StoreArguments(TemplateFrame frame, int nargs, Template st)
     {
         if (nargs > 0 && !st.impl.HasFormalArgs && st.impl.FormalArguments == null)
         {
@@ -743,7 +743,7 @@ public partial class Interpreter
         }
     }
 
-    protected void Indent(ITemplateWriter @out, TemplateFrame frame, int strIndex)
+    private void Indent(ITemplateWriter @out, TemplateFrame frame, int strIndex)
     {
         Template self = frame.Template;
         string indent = self.impl.strings[strIndex];
@@ -760,7 +760,7 @@ public partial class Interpreter
     /** Write out an expression result that doesn't use expression options.
      *  E.g., &lt;name&gt;
      */
-    protected virtual int WriteObjectNoOptions(ITemplateWriter @out, TemplateFrame frame, object o)
+    private int WriteObjectNoOptions(ITemplateWriter @out, TemplateFrame frame, object o)
     {
         int start = @out.Index; // track char we're about to Write
         int n = WriteObject(@out, frame, o, null);
@@ -777,7 +777,7 @@ public partial class Interpreter
     /** Write out an expression result that uses expression options.
      *  E.g., &lt;names; separator=", "&gt;
      */
-    protected virtual int WriteObjectWithOptions(ITemplateWriter @out, TemplateFrame frame, object o, object[] options)
+    private int WriteObjectWithOptions(ITemplateWriter @out, TemplateFrame frame, object o, object[] options)
     {
         int start = @out.Index; // track char we're about to Write
                                 // precompute all option values (Render all the way to strings)
@@ -816,7 +816,7 @@ public partial class Interpreter
     /** Generic method to emit text for an object. It differentiates
      *  between templates, iterable objects, and plain old Java objects (POJOs)
      */
-    protected virtual int WriteObject(ITemplateWriter @out, TemplateFrame frame, object o, string[] options)
+    private int WriteObject(ITemplateWriter @out, TemplateFrame frame, object o, string[] options)
     {
         int n = 0;
         if (o == null)
@@ -870,7 +870,7 @@ public partial class Interpreter
         return n;
     }
 
-    protected virtual int WriteIterator(ITemplateWriter @out, TemplateFrame frame, object o, string[] options)
+    private int WriteIterator(ITemplateWriter @out, TemplateFrame frame, object o, string[] options)
     {
         if (o == null)
             return 0;
@@ -899,7 +899,7 @@ public partial class Interpreter
         return n;
     }
 
-    protected virtual int WritePlainObject(ITemplateWriter @out, TemplateFrame frame, object o, string?[]? options)
+    private int WritePlainObject(ITemplateWriter @out, TemplateFrame frame, object o, string?[]? options)
     {
         // Get options.
         string? formatString = null;
@@ -953,18 +953,18 @@ public partial class Interpreter
         return n;
     }
 
-    protected virtual Interval GetExpressionInterval(TemplateFrame frame)
+    private Interval GetExpressionInterval(TemplateFrame frame)
     {
         return frame.Template.impl.sourceMap[frame.InstructionPointer];
     }
 
-    protected virtual void Map(TemplateFrame frame, object attr, Template st)
+    private void Map(TemplateFrame frame, object attr, Template st)
     {
         RotateMap(frame, attr, new List<Template>() { st });
     }
 
     // <names:a()> or <names:a(),b()>
-    protected virtual void RotateMap(TemplateFrame frame, object attr, List<Template> prototypes)
+    private void RotateMap(TemplateFrame frame, object attr, List<Template> prototypes)
     {
         if (attr == null)
         {
@@ -1001,7 +1001,7 @@ public partial class Interpreter
         }
     }
 
-    protected virtual List<Template> RotateMapIterator(TemplateFrame frame, IEnumerator iterator, List<Template> prototypes)
+    private List<Template> RotateMapIterator(TemplateFrame frame, IEnumerator iterator, List<Template> prototypes)
     {
         List<Template> mapped = new List<Template>();
         int i0 = 0;
@@ -1037,7 +1037,7 @@ public partial class Interpreter
 
     // <names,phones:{n,p | ...}> or <a,b:t()>
     // todo: i, i0 not set unless mentioned? map:{k,v | ..}?
-    protected virtual Template.AttributeList ZipMap(TemplateFrame frame, List<object> exprs, Template prototype)
+    private Template.AttributeList ZipMap(TemplateFrame frame, List<object> exprs, Template prototype)
     {
         Template self = frame.Template;
 
@@ -1114,7 +1114,7 @@ public partial class Interpreter
         return results;
     }
 
-    protected virtual void SetFirstArgument(TemplateFrame frame, Template st, object attr)
+    private void SetFirstArgument(TemplateFrame frame, Template st, object attr)
     {
         if (!st.impl.HasFormalArgs)
         {
@@ -1135,7 +1135,7 @@ public partial class Interpreter
         st.locals[0] = attr;
     }
 
-    protected virtual void AddToList(List<object> list, TemplateFrame frame, object o)
+    private void AddToList(List<object> list, TemplateFrame frame, object o)
     {
         o = Interpreter.ConvertAnythingIteratableToIterator(frame, o);
         if (o is IEnumerator)
@@ -1154,7 +1154,7 @@ public partial class Interpreter
     /** Return the first attribute if multiple valued or the attribute
      *  itself if single-valued.  Used in &lt;names:First()&gt;
      */
-    public virtual object First(TemplateFrame frame, object v)
+    public object First(TemplateFrame frame, object v)
     {
         if (v == null)
             return null;
@@ -1175,7 +1175,7 @@ public partial class Interpreter
      *  itself if single-valued. Unless it's a list or array, this is pretty
      *  slow as it iterates until the last element.
      */
-    public virtual object Last(TemplateFrame frame, object v)
+    public object Last(TemplateFrame frame, object v)
     {
         if (v == null)
             return null;
@@ -1199,7 +1199,7 @@ public partial class Interpreter
     /** Return everything but the first attribute if multiple valued
      *  or null if single-valued.
      */
-    public virtual object Rest(TemplateFrame frame, object v)
+    public object Rest(TemplateFrame frame, object v)
     {
         if (v == null)
             return null;
@@ -1228,7 +1228,7 @@ public partial class Interpreter
     }
 
     /** Return all but the last element.  Trunc(x)=null if x is single-valued. */
-    public virtual object Trunc(TemplateFrame frame, object v)
+    public object Trunc(TemplateFrame frame, object v)
     {
         if (v == null)
             return null;
@@ -1251,7 +1251,7 @@ public partial class Interpreter
     }
 
     /** Return a new list w/o null values. */
-    public virtual object Strip(TemplateFrame frame, object v)
+    public object Strip(TemplateFrame frame, object v)
     {
         if (v == null)
             return null;
@@ -1277,7 +1277,7 @@ public partial class Interpreter
     /** Return a list with the same elements as v but in reverse order. null
      *  values are NOT stripped out. use Reverse(Strip(v)) to do that.
      */
-    public virtual object Reverse(TemplateFrame frame, object v)
+    public object Reverse(TemplateFrame frame, object v)
     {
         if (v == null)
             return null;
@@ -1302,7 +1302,7 @@ public partial class Interpreter
      *  Special case several common collections and primitive arrays for
      *  speed. This method by Kay Roepke from v3.
      */
-    public virtual object Length(object v)
+    public object Length(object v)
     {
         if (v == null)
             return 0;
@@ -1336,7 +1336,7 @@ public partial class Interpreter
         return 1;
     }
 
-    protected virtual string ToString(TemplateFrame frame, object value)
+    private string ToString(TemplateFrame frame, object value)
     {
         if (value != null)
         {
@@ -1410,7 +1410,7 @@ public partial class Interpreter
         return singleton.GetEnumerator();
     }
 
-    protected virtual bool TestAttributeTrue(object a)
+    private bool TestAttributeTrue(object a)
     {
         if (a == null)
             return false;
@@ -1443,7 +1443,7 @@ public partial class Interpreter
         return true;
     }
 
-    protected virtual object GetObjectProperty(TemplateFrame frame, object o, object property)
+    private object GetObjectProperty(TemplateFrame frame, object o, object property)
     {
         Template self = frame.Template;
 
@@ -1475,7 +1475,7 @@ public partial class Interpreter
      *  If not found, look for a map.  So attributes sent in to a template
      *  override dictionary names.
      */
-    public virtual object GetAttribute(TemplateFrame frame, string name)
+    public object GetAttribute(TemplateFrame frame, string name)
     {
         TemplateFrame scope = frame;
         while (scope != null)
@@ -1505,7 +1505,7 @@ public partial class Interpreter
      *
      *  The evaluation context is the template enclosing invokedST.
      */
-    protected virtual void SetDefaultArguments(TemplateFrame frame)
+    private void SetDefaultArguments(TemplateFrame frame)
     {
         Template invokedST = frame.Template;
         if (invokedST.impl.FormalArguments == null || invokedST.impl.NumberOfArgsWithDefaultValues == 0)
@@ -1549,7 +1549,7 @@ public partial class Interpreter
         }
     }
 
-    protected virtual void Trace(TemplateFrame frame, int ip)
+    private void Trace(TemplateFrame frame, int ip)
     {
         Template self = frame.Template;
         StringBuilder tr = new StringBuilder();
@@ -1580,7 +1580,7 @@ public partial class Interpreter
             Console.WriteLine(s);
     }
 
-    protected virtual void PrintForTrace(StringBuilder tr, TemplateFrame frame, object o)
+    private void PrintForTrace(StringBuilder tr, TemplateFrame frame, object o)
     {
         if (o is Template)
         {
@@ -1609,7 +1609,7 @@ public partial class Interpreter
         }
     }
 
-    public virtual List<InterpEvent> GetEvents()
+    public List<InterpEvent> GetEvents()
     {
         return events;
     }
@@ -1619,7 +1619,7 @@ public partial class Interpreter
      *  create it.  If EvalTemplateEvent, store in parent's
      *  childEvalTemplateEvents list for STViz tree view.
      */
-    protected void TrackDebugEvent(TemplateFrame frame, InterpEvent e)
+    private void TrackDebugEvent(TemplateFrame frame, InterpEvent e)
     {
         //		System.out.println(e);
         this.events.Add(e);
@@ -1640,7 +1640,7 @@ public partial class Interpreter
         }
     }
 
-    public virtual List<string> GetExecutionTrace()
+    public List<string> GetExecutionTrace()
     {
         return executeTrace;
     }
