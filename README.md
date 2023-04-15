@@ -1,12 +1,11 @@
 # NetTemplate
 [![Nuget](https://img.shields.io/nuget/v/NetTemplate)](https://www.nuget.org/packages/NetTemplate)
 
-This is a fork of StringTemplate 4 for .NET to modernize it. The goal of this project is to be a superset of StringTemplate 4. That is, backward compatible with
-StringTemplate 4 with additional features.
+This is a fork of StringTemplate 4 for .NET to modernize it. The goal of this project is to be a superset of StringTemplate 4. That is, any template of StringTemplate 4 can be using with this library unmodified with additional features available.
 
 ## Usage
 
-The current version can be drop-in replacement for `StringTemplate4`. Just rename namespace from `Antlr4.StringTemplate` to `NetTemplate`.
+The 1.X version can be drop-in replacement for `StringTemplate4`. Just rename namespace from `Antlr4.StringTemplate` to `NetTemplate`. Every next major version will have some small breaking changes on the code so you can slowly upgraded. The template itself will never have a breaking change (unless StringTemplate 4 introduced it), only the code that using this library.
 
 ## Additional features
 
@@ -20,6 +19,7 @@ The following is a list of the new expression options in additional to StringTem
 
 ### 1.0 to 2.0
 
+- `culture` parameter on `IAttributeRenderer.ToString()` will be able to override by the user.
 - `IFormattable` object will be honored during rendering.
 - `NetTemplate.Interpreter` become a sealed class.
 
