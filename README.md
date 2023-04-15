@@ -20,6 +20,7 @@ The following is a list of the new expression options in additional to StringTem
 
 ### 1.0 to 2.0
 
+- `IFormattable` object will be honored during rendering.
 - `NetTemplate.Interpreter` become a sealed class.
 
 ## Development

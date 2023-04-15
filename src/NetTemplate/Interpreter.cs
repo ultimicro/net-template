@@ -1,5 +1,6 @@
 ﻿namespace NetTemplate;
 
+using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
@@ -902,12 +903,12 @@ public sealed class Interpreter
     private int WritePlainObject(ITemplateWriter @out, TemplateFrame frame, object o, string?[]? options)
     {
         // Get options.
-        string? formatString = null;
+        string? format = null;
         CultureInfo? culture = null;
 
         if (options is not null)
         {
-            formatString = options[(int)RenderOption.Format];
+            format = options[(int)RenderOption.Format];
 
             if (options[(int)RenderOption.Culture] is { } option)
             {
@@ -924,22 +925,23 @@ public sealed class Interpreter
 
         // Get result string.
         IAttributeRenderer r = frame.Template.impl.NativeGroup.GetAttributeRenderer(o.GetType());
-
         string v;
-        if (r != null)
+
+        if (r is not null)
         {
-            v = r.ToString(o, formatString, culture ?? this.culture);
+            v = r.ToString(o, format, culture ?? this.culture);
         }
         else
         {
-            if (o is bool)
-                v = (bool)o ? "true" : "false";
-            else if (o is bool? && ((bool?)o).HasValue)
-                v = ((bool?)o).Value ? "true" : "false";
-            else
-                v = o.ToString();
+            v = o switch
+            {
+                bool obj => obj ? "true" : "false",
+                IFormattable obj => obj.ToString(format, culture ?? this.culture),
+                var obj => obj.ToString(),
+            };
         }
 
+        // Write the result.
         int n;
         if (options != null && options[(int)RenderOption.Wrap] != null)
         {
