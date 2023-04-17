@@ -60,7 +60,7 @@ public sealed class Interpreter
     /** For renderers, we have to pass in the culture */
     private readonly CultureInfo culture;
 
-    private readonly ErrorManager _errorManager;
+    private readonly ErrorManager errorManager;
 
     /** Operand stack, grows upwards */
     private object[] operands = new object[DefaultOperandStackSize];
@@ -97,12 +97,9 @@ public sealed class Interpreter
 
     public Interpreter(TemplateGroup group, CultureInfo culture, ErrorManager errorManager, bool debug)
     {
-        if (errorManager == null)
-            throw new ArgumentNullException("errorManager");
-
         this.group = group;
         this.culture = culture;
-        this._errorManager = errorManager;
+        this.errorManager = errorManager;
         this._debug = debug;
         if (debug)
         {
@@ -138,7 +135,7 @@ public sealed class Interpreter
             StringBuilder builder = new StringBuilder();
             builder.AppendLine(e.ToString());
             builder.AppendLine(e.StackTrace);
-            _errorManager.RuntimeError(frame, ErrorType.INTERNAL_ERROR, "internal error: " + builder);
+            this.errorManager.RuntimeError(frame, ErrorType.INTERNAL_ERROR, "internal error: " + builder);
             return 0;
         }
     }
@@ -186,7 +183,7 @@ public sealed class Interpreter
                     }
                     catch (AttributeNotFoundException)
                     {
-                        _errorManager.RuntimeError(frame, ErrorType.NO_SUCH_ATTRIBUTE, name);
+                        this.errorManager.RuntimeError(frame, ErrorType.NO_SUCH_ATTRIBUTE, name);
                         o = null;
                     }
                     operands[++sp] = o;
@@ -405,7 +402,7 @@ public sealed class Interpreter
                     }
                     else
                     {
-                        _errorManager.RuntimeError(frame, ErrorType.EXPECTING_STRING, "trim", o.GetType());
+                        this.errorManager.RuntimeError(frame, ErrorType.EXPECTING_STRING, "trim", o.GetType());
                         operands[++sp] = o;
                     }
                     break;
@@ -422,7 +419,7 @@ public sealed class Interpreter
                     }
                     else
                     {
-                        _errorManager.RuntimeError(frame, ErrorType.EXPECTING_STRING, "strlen", o.GetType());
+                        this.errorManager.RuntimeError(frame, ErrorType.EXPECTING_STRING, "strlen", o.GetType());
                         operands[++sp] = 0;
                     }
                     break;
@@ -470,7 +467,7 @@ public sealed class Interpreter
                     }
                     catch (IOException ioe)
                     {
-                        _errorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
+                        this.errorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
                     }
                     break;
 
@@ -516,7 +513,7 @@ public sealed class Interpreter
                 //    break;
 
                 default:
-                    _errorManager.InternalError(self, "invalid bytecode @ " + (ip - 1) + ": " + opcode, null);
+                    this.errorManager.InternalError(self, "invalid bytecode @ " + (ip - 1) + ": " + opcode, null);
                     self.impl.Dump();
                     break;
             }
@@ -541,7 +538,7 @@ public sealed class Interpreter
         CompiledTemplate imported = self.impl.NativeGroup.LookupImportedTemplate(name);
         if (imported == null)
         {
-            _errorManager.RuntimeError(frame, ErrorType.NO_IMPORTED_TEMPLATE, name);
+            this.errorManager.RuntimeError(frame, ErrorType.NO_IMPORTED_TEMPLATE, name);
             st = self.Group.CreateStringTemplateInternally(new CompiledTemplate());
         }
         else
@@ -563,7 +560,7 @@ public sealed class Interpreter
         CompiledTemplate imported = self.impl.NativeGroup.LookupImportedTemplate(name);
         if (imported == null)
         {
-            _errorManager.RuntimeError(frame, ErrorType.NO_IMPORTED_TEMPLATE, name);
+            this.errorManager.RuntimeError(frame, ErrorType.NO_IMPORTED_TEMPLATE, name);
             st = self.Group.CreateStringTemplateInternally(new CompiledTemplate());
         }
         else
@@ -612,7 +609,7 @@ public sealed class Interpreter
                     // if no default value
                     if (arg.DefaultValueToken == null)
                     {
-                        _errorManager.RuntimeError(frame, ErrorType.NO_SUCH_ATTRIBUTE_PASS_THROUGH, arg.Name);
+                        this.errorManager.RuntimeError(frame, ErrorType.NO_SUCH_ATTRIBUTE_PASS_THROUGH, arg.Name);
                         attrs[arg.Name] = null;
                     }
                 }
@@ -647,7 +644,7 @@ public sealed class Interpreter
                     if (st.impl.FormalArguments == null || st.impl.TryGetFormalArgument(argument.Key) == null)
                     {
                         noSuchAttributeReported = true;
-                        _errorManager.RuntimeError(
+                        this.errorManager.RuntimeError(
                             frame,
                             ErrorType.NO_SUCH_ATTRIBUTE,
                             argument.Key);
@@ -698,7 +695,7 @@ public sealed class Interpreter
             {
                 int nargs = attrs != null ? attrs.Count : 0;
                 int nformalArgs = formalArguments.Count;
-                _errorManager.RuntimeError(
+                this.errorManager.RuntimeError(
                     frame,
                     ErrorType.ARGUMENT_COUNT_MISMATCH,
                     nargs,
@@ -726,7 +723,7 @@ public sealed class Interpreter
         if (nargs < (nformalArgs - st.impl.NumberOfArgsWithDefaultValues) ||
              nargs > nformalArgs)
         {
-            _errorManager.RuntimeError(frame,
+            this.errorManager.RuntimeError(frame,
                                 ErrorType.ARGUMENT_COUNT_MISMATCH,
                                 nargs,
                                 st.impl.Name,
@@ -847,7 +844,7 @@ public sealed class Interpreter
                 }
                 catch (IOException ioe)
                 {
-                    _errorManager.IOError(template, ErrorType.WRITE_IO_ERROR, ioe);
+                    this.errorManager.IOError(template, ErrorType.WRITE_IO_ERROR, ioe);
                 }
             }
             n = Execute(@out, frame);
@@ -864,7 +861,7 @@ public sealed class Interpreter
             }
             catch (IOException ioe)
             {
-                _errorManager.IOError(frame.Template, ErrorType.WRITE_IO_ERROR, ioe, o);
+                this.errorManager.IOError(frame.Template, ErrorType.WRITE_IO_ERROR, ioe, o);
             }
         }
 
@@ -918,7 +915,7 @@ public sealed class Interpreter
                 }
                 catch (System.Globalization.CultureNotFoundException)
                 {
-                    _errorManager.RuntimeError(frame, ErrorType.NO_SUCH_CULTURE, option);
+                    this.errorManager.RuntimeError(frame, ErrorType.NO_SUCH_CULTURE, option);
                 }
             }
         }
@@ -1061,7 +1058,7 @@ public sealed class Interpreter
         List<FormalArgument> formalArguments = code.FormalArguments;
         if (!code.HasFormalArgs || formalArguments == null)
         {
-            _errorManager.RuntimeError(frame, ErrorType.MISSING_FORMAL_ARGUMENTS);
+            this.errorManager.RuntimeError(frame, ErrorType.MISSING_FORMAL_ARGUMENTS);
             return null;
         }
 
@@ -1073,7 +1070,7 @@ public sealed class Interpreter
 
         if (nformalArgs != numExprs)
         {
-            _errorManager.RuntimeError(frame, ErrorType.MAP_ARGUMENT_COUNT_MISMATCH, numExprs, nformalArgs);
+            this.errorManager.RuntimeError(frame, ErrorType.MAP_ARGUMENT_COUNT_MISMATCH, numExprs, nformalArgs);
             // TODO just fill first n
             // truncate arg list to match smaller size
             int shorterSize = Math.Min(formalArgumentNames.Length, numExprs);
@@ -1130,7 +1127,7 @@ public sealed class Interpreter
 
         if (st.impl.FormalArguments == null)
         {
-            _errorManager.RuntimeError(frame, ErrorType.ARGUMENT_COUNT_MISMATCH, 1, st.impl.Name, 0);
+            this.errorManager.RuntimeError(frame, ErrorType.ARGUMENT_COUNT_MISMATCH, 1, st.impl.Name, 0);
             return;
         }
 
@@ -1451,7 +1448,7 @@ public sealed class Interpreter
 
         if (o == null)
         {
-            _errorManager.RuntimeError(frame, ErrorType.NO_SUCH_PROPERTY,
+            this.errorManager.RuntimeError(frame, ErrorType.NO_SUCH_PROPERTY,
                                       "null." + property);
             return null;
         }
@@ -1467,7 +1464,7 @@ public sealed class Interpreter
         }
         catch (TemplateNoSuchPropertyException e)
         {
-            _errorManager.RuntimeError(frame, ErrorType.NO_SUCH_PROPERTY,
+            this.errorManager.RuntimeError(frame, ErrorType.NO_SUCH_PROPERTY,
                                       e, o.GetType().Name + "." + property);
         }
         return null;
