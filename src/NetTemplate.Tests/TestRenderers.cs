@@ -1,5 +1,6 @@
 ﻿namespace NetTemplate.Tests;
 
+using System;
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using CultureInfo = System.Globalization.CultureInfo;
@@ -363,5 +364,28 @@ public class TestRenderers : BaseTest
         string expecting = " -2 100 3,142 "; // Ê
         string result = st.Render(new CultureInfo("pl"));
         Assert.AreEqual(expecting, result);
+    }
+
+    [TestMethod]
+    [TestCategory(TestCategories.ST4)]
+    public void TestException()
+    {
+        var group = new TemplateGroup();
+        group.RegisterRenderer(typeof(string), new ExceptionRenderer());
+        var st = new Template(group, "<x>");
+        st.Add("x", "foo");
+        Assert.ThrowsException<RendererException>(() => st.Render());
+    }
+
+    internal sealed class ExceptionRenderer : IAttributeRenderer
+    {
+        public string ToString(object obj, string formatString, CultureInfo culture)
+        {
+            throw new RendererException();
+        }
+    }
+
+    internal sealed class RendererException : Exception
+    {
     }
 }
