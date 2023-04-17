@@ -27,6 +27,7 @@ The following is a list of the new expression options in additional to StringTem
 - `culture` parameter on `IAttributeRenderer.ToString()` will be able to override by the user.
 - `IFormattable` object will be honored during rendering.
 - `NetTemplate.Interpreter` become a sealed class.
+- `AssemblyInfo` has been removed.
 
 ## Development
 
