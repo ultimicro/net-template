@@ -20,6 +20,7 @@ The following is a list of the new expression options in additional to StringTem
 ### 2.0 to 3.0
 
 - All constructors of `NetTemplate.Interpreter` become internal.
+- Any exception from the template will propagation to the call site instead of raising an INTERNAL_ERROR.
 
 ### 1.0 to 2.0
 

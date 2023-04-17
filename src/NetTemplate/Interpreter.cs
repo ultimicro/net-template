@@ -6,20 +6,17 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using NetTemplate.Compiler;
 using NetTemplate.Debug;
-using NetTemplate.Extensions;
 using NetTemplate.Misc;
 using Array = System.Array;
 using BitConverter = System.BitConverter;
 using Console = System.Console;
 using CultureInfo = System.Globalization.CultureInfo;
 using Environment = System.Environment;
-using Exception = System.Exception;
 using ICollection = System.Collections.ICollection;
 using IDictionary = System.Collections.IDictionary;
 using IEnumerable = System.Collections.IEnumerable;
 using IEnumerator = System.Collections.IEnumerator;
 using IList = System.Collections.IList;
-using IOException = System.IO.IOException;
 using Math = System.Math;
 using StringBuilder = System.Text.StringBuilder;
 using StringWriter = System.IO.StringWriter;
@@ -115,28 +112,31 @@ public sealed class Interpreter
         }
     }
 
-    /** Execute template self and return how many characters it wrote to out */
+    /// <summary>
+    /// Execute template self.
+    /// </summary>
+    /// <param name="out">
+    /// The <see cref="ITemplateWriter"/> to output to.
+    /// </param>
+    /// <param name="frame">
+    /// Current frame.
+    /// </param>
+    /// <returns>
+    /// The number of characters it wrote to <paramref name="out"/>.
+    /// </returns>
+    /// <exception cref="TemplateException">
+    /// The current template is invalid.
+    /// </exception>
     public int Execute(ITemplateWriter @out, TemplateFrame frame)
     {
-        try
+        if (frame.StackDepth > 200)
         {
-            if (frame.StackDepth > 200)
-                throw new TemplateException("Template stack overflow.", null);
-
-            if (trace)
-                Console.Out.WriteLine("Execute({0})", frame.Template.Name);
-
-            SetDefaultArguments(frame);
-            return ExecuteImpl(@out, frame);
+            throw new TemplateException("Template stack overflow.", null);
         }
-        catch (Exception e) when (!e.IsCritical())
-        {
-            StringBuilder builder = new StringBuilder();
-            builder.AppendLine(e.ToString());
-            builder.AppendLine(e.StackTrace);
-            this.errorManager.RuntimeError(frame, ErrorType.INTERNAL_ERROR, "internal error: " + builder);
-            return 0;
-        }
+
+        this.SetDefaultArguments(frame);
+
+        return this.ExecuteImpl(@out, frame);
     }
 
     private int ExecuteImpl(ITemplateWriter @out, TemplateFrame frame)
@@ -454,20 +454,14 @@ public sealed class Interpreter
                     break;
 
                 case Bytecode.INSTR_NEWLINE:
-                    try
+                    if (prevOpcode == Bytecode.INSTR_NEWLINE ||
+                        prevOpcode == Bytecode.INSTR_INDENT ||
+                        this.nwline > 0)
                     {
-                        if (prevOpcode == Bytecode.INSTR_NEWLINE ||
-                            prevOpcode == Bytecode.INSTR_INDENT ||
-                            nwline > 0)
-                        {
-                            @out.Write(Environment.NewLine);
-                        }
-                        nwline = 0;
+                        @out.Write(Environment.NewLine);
                     }
-                    catch (IOException ioe)
-                    {
-                        this.errorManager.IOError(self, ErrorType.WRITE_IO_ERROR, ioe);
-                    }
+
+                    this.nwline = 0;
                     break;
 
                 case Bytecode.INSTR_NOOP:
@@ -833,34 +827,27 @@ public sealed class Interpreter
         if (template != null)
         {
             frame = new TemplateFrame(template, frame);
+
             if (options != null && options[(int)RenderOption.Wrap] != null)
             {
                 // if we have a wrap string, then inform writer it
                 // might need to wrap
-                try
-                {
-                    @out.WriteWrap(options[(int)RenderOption.Wrap]);
-                }
-                catch (IOException ioe)
-                {
-                    this.errorManager.IOError(template, ErrorType.WRITE_IO_ERROR, ioe);
-                }
+                @out.WriteWrap(options[(int)RenderOption.Wrap]);
             }
-            n = Execute(@out, frame);
+
+            n = this.Execute(@out, frame);
         }
         else
         {
             o = ConvertAnythingIteratableToIterator(frame, o); // normalize
-            try
+
+            if (o is IEnumerator)
             {
-                if (o is IEnumerator)
-                    n = WriteIterator(@out, frame, o, options);
-                else
-                    n = WritePlainObject(@out, frame, o, options);
+                n = this.WriteIterator(@out, frame, o, options);
             }
-            catch (IOException ioe)
+            else
             {
-                this.errorManager.IOError(frame.Template, ErrorType.WRITE_IO_ERROR, ioe, o);
+                n = this.WritePlainObject(@out, frame, o, options);
             }
         }
 

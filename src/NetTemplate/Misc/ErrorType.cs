@@ -2,7 +2,9 @@
 
 using DebuggerDisplayAttribute = System.Diagnostics.DebuggerDisplayAttribute;
 
-/** All the errors that can happen and how to generate a message */
+/// <summary>
+/// All the errors that can happen and how to generate a message.
+/// </summary>
 [DebuggerDisplay("{Message}")]
 public sealed class ErrorType
 {
@@ -41,7 +43,6 @@ public sealed class ErrorType
 
     // INTERNAL ERRORS
     public static readonly ErrorType INTERNAL_ERROR = new ErrorType("{0}");
-    public static readonly ErrorType WRITE_IO_ERROR = new ErrorType("error writing output caused by");
     public static readonly ErrorType CANT_LOAD_GROUP_FILE = new ErrorType("can't Load group file {0}");
 
     private readonly string _message;
