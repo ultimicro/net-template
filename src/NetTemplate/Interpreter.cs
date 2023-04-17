@@ -8,7 +8,6 @@ using NetTemplate.Compiler;
 using NetTemplate.Debug;
 using NetTemplate.Extensions;
 using NetTemplate.Misc;
-using ArgumentNullException = System.ArgumentNullException;
 using Array = System.Array;
 using BitConverter = System.BitConverter;
 using Console = System.Console;
@@ -80,22 +79,22 @@ public sealed class Interpreter
      */
     private List<InterpEvent> events;
 
-    public Interpreter(TemplateGroup group, bool debug)
+    internal Interpreter(TemplateGroup group, bool debug)
         : this(group, CultureInfo.CurrentCulture, group.ErrorManager, debug)
     {
     }
 
-    public Interpreter(TemplateGroup group, CultureInfo culture, bool debug)
+    internal Interpreter(TemplateGroup group, CultureInfo culture, bool debug)
         : this(group, culture, group.ErrorManager, debug)
     {
     }
 
-    public Interpreter(TemplateGroup group, ErrorManager errorManager, bool debug)
+    internal Interpreter(TemplateGroup group, ErrorManager errorManager, bool debug)
         : this(group, CultureInfo.CurrentCulture, errorManager, debug)
     {
     }
 
-    public Interpreter(TemplateGroup group, CultureInfo culture, ErrorManager errorManager, bool debug)
+    internal Interpreter(TemplateGroup group, CultureInfo culture, ErrorManager errorManager, bool debug)
     {
         this.group = group;
         this.culture = culture;

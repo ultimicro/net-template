@@ -17,6 +17,10 @@ The following is a list of the new expression options in additional to StringTem
 
 ## Breaking changes
 
+### 2.0 to 3.0
+
+- All constructors of `NetTemplate.Interpreter` become internal.
+
 ### 1.0 to 2.0
 
 - `culture` parameter on `IAttributeRenderer.ToString()` will be able to override by the user.
