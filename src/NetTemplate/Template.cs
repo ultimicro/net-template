@@ -2,7 +2,6 @@
 
 using System.Collections.Generic;
 using System.Linq;
-using System.Runtime.CompilerServices;
 using System.Text.RegularExpressions;
 using NetTemplate.Compiler;
 using NetTemplate.Debug;
@@ -11,22 +10,22 @@ using NetTemplate.Misc;
 using ArgumentException = System.ArgumentException;
 using ArgumentNullException = System.ArgumentNullException;
 using Array = System.Array;
-using Console = System.Console;
 using CultureInfo = System.Globalization.CultureInfo;
 using IList = System.Collections.IList;
 using StringWriter = System.IO.StringWriter;
 using TextWriter = System.IO.TextWriter;
 
-/** An instance of the StringTemplate. It consists primarily of
- *  a reference to its implementation (shared among all instances)
- *  and a hash table of attributes.  Because of dynamic scoping,
- *  we also need a reference to any enclosing instance. For example,
- *  in a deeply nested template for an HTML page body, we could still reference
- *  the title attribute defined in the outermost page template.
- *
- *  To use templates, you create one (usually via TemplateGroup) and then inject
- *  attributes using Add(). To Render its attacks, use Render().
- */
+/// <summary>
+/// An instance of the StringTemplate. It consists primarily of
+/// a reference to its implementation (shared among all instances)
+/// and a hash table of attributes.  Because of dynamic scoping,
+/// we also need a reference to any enclosing instance. For example,
+/// in a deeply nested template for an HTML page body, we could still reference
+/// the title attribute defined in the outermost page template.
+///
+/// To use templates, you create one (usually via TemplateGroup) and then inject
+/// attributes using Add(). To Render its attacks, use Render().
+/// </summary>
 public class Template
 {
     /** &lt;@r()&gt;, &lt;@r&gt;...&lt;@end&gt;, and @t.r() ::= "..." defined manually by coder */
